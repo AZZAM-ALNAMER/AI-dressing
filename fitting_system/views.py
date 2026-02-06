@@ -260,13 +260,23 @@ def recommendations(request, session_id):
     if gender and gender not in ['men', 'women']:
         gender = None
     
+    # Get fit type filter from query parameter
+    fit_type = request.GET.get('fit', None)
+    if fit_type and fit_type not in ['slim', 'regular', 'oversize']:
+        fit_type = None
+    
     # Get recommended colors based on skin tone + undertone
     rec_engine = RecommendationEngine()
     undertone = getattr(body_scan, 'undertone', 'warm')  # Default to warm for backward compatibility
     recommended_colors = rec_engine.recommend_colors(body_scan.skin_tone, undertone)
     
-    # Get actual matching products with size + color from store (with optional gender filter)
-    matching_products = rec_engine.get_matching_product_variants(body_scan, gender=gender, limit=12)
+    # Get actual matching products with size + color from store (with optional filters)
+    matching_products = rec_engine.get_matching_product_variants(
+        body_scan, 
+        gender=gender, 
+        fit_type=fit_type,
+        limit=12
+    )
     
     # Calculate recommended size and fit directly from measurements
     measurements = {
@@ -276,7 +286,8 @@ def recommendations(request, session_id):
         'shoulder_width': float(body_scan.shoulder_width)
     }
     recommended_size = rec_engine.recommend_size(measurements)
-    recommended_fit = rec_engine.recommend_fit(measurements)
+    recommended_size = rec_engine.recommend_size(measurements)
+    recommended_fit = rec_engine.recommend_fit(measurements)  # Returns slim/regular/oversize
     
     context = {
         'body_scan': body_scan,
@@ -288,9 +299,11 @@ def recommendations(request, session_id):
         'skin_tone_display': body_scan.skin_tone.replace('_', ' ').title(),
         'undertone_display': undertone.title(),
         'selected_gender': gender,  # Pass current gender filter to template
+        'selected_fit': fit_type,   # Pass current fit filter to template
     }
     
     return render(request, 'recommendations.html', context)
+
 
 
 

@@ -322,6 +322,7 @@ class RecommendationEngine:
         self,
         body_scan,
         gender: str = None,
+        fit_type: str = None,
         limit: int = 6
     ) -> List[Dict]:
         """
@@ -331,11 +332,13 @@ class RecommendationEngine:
         1. Have the user's recommended size in stock
         2. Preferably have a color that matches their skin tone
         3. Match the user's preferred gender (if specified)
-        4. Prioritize products matching recommended fit type
+        4. Match the user's preferred fit type (if specified)
+        5. Prioritize products matching recommended fit type
         
         Args:
             body_scan: BodyScan model instance
             gender: Optional gender filter ('men', 'women', or None for all)
+            fit_type: Optional fit type filter ('slim', 'regular', 'oversize', or None for all)
             limit: Maximum number of products to return
             
         Returns:
@@ -369,13 +372,19 @@ class RecommendationEngine:
         # Find matching products
         matching_products = []
         
-        # Query products with optional gender filter
+        # Build product query with filters
+        products = Product.objects.all()
+        
+        # Apply gender filter
         if gender and gender in ['men', 'women']:
-            products = Product.objects.filter(
+            products = products.filter(
                 Q(gender=gender) | Q(gender='unisex')
             )
-        else:
-            products = Product.objects.all()
+        
+        # Apply fit type filter
+        if fit_type and fit_type in ['slim', 'regular', 'oversize']:
+            products = products.filter(fit_type=fit_type)
+
         
         for product in products:
             # Get garment-specific size for this product

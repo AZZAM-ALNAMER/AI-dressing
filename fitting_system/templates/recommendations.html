@@ -91,24 +91,58 @@
         <div class="mb-4 p-3 bg-indigo-50 rounded-lg inline-flex items-center gap-2">
             <span class="text-indigo-600 font-medium">Your Recommended Fit:</span>
             <span
-                class="px-3 py-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-bold rounded-full capitalize">{{
-                recommended_fit }}</span>
+                class="px-3 py-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-bold rounded-full capitalize">
+                {{ recommended_fit|default:"Regular" }}
+            </span>
         </div>
 
-        <!-- Gender Toggle Buttons -->
-        <div class="flex flex-wrap gap-3 mb-6">
-            <a href="?gender="
-                class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 {% if not selected_gender %}bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-                <span>👥</span> All
-            </a>
-            <a href="?gender=men"
-                class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 {% if selected_gender == 'men' %}bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-                <span>👨</span> Men
-            </a>
-            <a href="?gender=women"
-                class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 {% if selected_gender == 'women' %}bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-                <span>👩</span> Women
-            </a>
+
+        <!-- Filter Buttons Row -->
+        <div class="flex flex-wrap items-center gap-4 mb-6">
+            <!-- Gender Filters -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-500">Gender:</span>
+                <div class="flex gap-2">
+                    <a href="?gender={% if selected_fit %}&fit={{ selected_fit }}{% endif %}"
+                        class="px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-1 {% if not selected_gender %}bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        👥 All
+                    </a>
+                    <a href="?gender=men{% if selected_fit %}&fit={{ selected_fit }}{% endif %}"
+                        class="px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-1 {% if selected_gender == 'men' %}bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        👨 Men
+                    </a>
+                    <a href="?gender=women{% if selected_fit %}&fit={{ selected_fit }}{% endif %}"
+                        class="px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-1 {% if selected_gender == 'women' %}bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        👩 Women
+                    </a>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="hidden sm:block w-px h-8 bg-gray-300"></div>
+
+            <!-- Fit Type Filters -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-500">Fit:</span>
+                <div class="flex gap-2">
+                    <a href="?{% if selected_gender %}gender={{ selected_gender }}{% endif %}"
+                        class="px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 {% if not selected_fit %}bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        All Fits
+                    </a>
+                    <a href="?fit=slim{% if selected_gender %}&gender={{ selected_gender }}{% endif %}"
+                        class="px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 {% if selected_fit == 'slim' %}bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        👔 Slim
+                    </a>
+                    <a href="?fit=regular{% if selected_gender %}&gender={{ selected_gender }}{% endif %}"
+                        class="px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 {% if selected_fit == 'regular' %}bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        👕 Regular
+                    </a>
+                    <a href="?fit=oversize{% if selected_gender %}&gender={{ selected_gender }}{% endif %}"
+                        class="px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 {% if selected_fit == 'oversize' %}bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        🧥 Oversize
+                    </a>
+                </div>
+            </div>
         </div>
 
         {% if matching_products %}
